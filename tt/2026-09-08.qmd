@@ -19,8 +19,6 @@ library(tidyverse)
 library(ggplot2)
 
 cappuccino_index <- read_csv("cappuccino_index.csv")
-
-# Replace non-breaking spaces, as instructed in the data README.
 cappuccino_index$country <- gsub("\u00a0", " ", cappuccino_index$country)
 ```
 
