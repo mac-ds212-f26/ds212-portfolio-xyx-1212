@@ -393,5 +393,115 @@
       "Extras",
       "<span class='chapter-number'>13</span>  <span class='chapter-title'>Extra Sample 2</span>"
     ]
+  },
+  {
+    "objectID": "hw02/hw02-p1.html",
+    "href": "hw02/hw02-p1.html",
+    "title": "HW02-P1 Adv Data Viz",
+    "section": "",
+    "text": "Instructions\nUsing ggplot2 and other tools in R, recreate the original New York Times graphic to the greatest extent possible. Try to get as close as possible to the figure below:\nYou will need to use reference pages and documentation to discover necessary tools. For example, you may want to Google search “ggplot multiple plots”. When looking through results, check publication dates and use newer references. Some helpful resources could include R documentation, Stack Overflow, and R cheatsheets.\nRequirements\nBonus: If you’d like further practice, recreate the legend in the temperature graph that shows how the colored lines relate to record, normal, and actual highs.",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P1 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p1.html#instructions",
+    "href": "hw02/hw02-p1.html#instructions",
+    "title": "HW02-P1 Adv Data Viz",
+    "section": "",
+    "text": "Temperature graph\n\nBands for the record, normal, and actual highs and lows are shown in the correct colors.\nDownward triangles point to the record high temperatures above the red band.\nText displays the record high temperatures above the triangles.\nX-axis label: 3-letter month abbreviations appear in the middle of each month.\nY-axis label: Tick marks at 0, 40, 80, and 120 only.\nVertical lines separate the months.\nTitle of “Temperature” is included.\n\n\nPrecipitation\n\nTan area and blue line reflecting the monthly cumulative precipitation is included.\nText (number) for cumulative precipitation for each month is included at the end of each month just above the blue line.\nDownward triangles point to the record precipitation days.\nVertical lines separate the months.\nTitle of “Precipitation” is included.\n\n\nOverall\n\nBoth the temperature and precipitation graphs are in one figure.\nThe temperature plot takes up more vertical space than the precipitation plot.\nThe title “SFO weather in 2011” is present.\n\n\nResource reflection\n\nAt least 1 resource is listed\nAt least 3 sentences about resources and their helpfulness in the task",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P1 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p1.html#setup",
+    "href": "hw02/hw02-p1.html#setup",
+    "title": "HW02-P1 Adv Data Viz",
+    "section": "Setup",
+    "text": "Setup\n\nCodelibrary(tidyverse)\nlibrary(gridExtra)\n\nweather &lt;- read_csv(\"../ica/data/processed/weather_clean.csv\", show_col_types = FALSE) %&gt;%\n  arrange(dateInYear)\n\nmonth_labels &lt;- weather %&gt;%\n  group_by(Month) %&gt;%\n  summarize(x = mean(range(dateInYear)), label = first(month_name), .groups = \"drop\")\n\nmonth_ends &lt;- weather %&gt;%\n  group_by(Month) %&gt;%\n  slice_max(dateInYear, n = 1, with_ties = FALSE) %&gt;%\n  ungroup()",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P1 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p1.html#visualization",
+    "href": "hw02/hw02-p1.html#visualization",
+    "title": "HW02-P1 Adv Data Viz",
+    "section": "Visualization",
+    "text": "Visualization\n\nCodetemperature_plot &lt;- ggplot(weather, aes(x = dateInYear)) +\n geom_linerange(\n  aes(ymin = RecordLow, ymax = RecordHigh),\n  color = \"#e7d9c7\",\n  linewidth = 2) +\ngeom_linerange(\n  aes(ymin = NormalLow, ymax = NormalHigh),\n  color = \"#c8dded\",\n  linewidth = 2) +\ngeom_linerange(\n  aes(ymin = Low, ymax = High),\n  color = \"#df796c\",\n  linewidth = 2) +\n  geom_point(data = filter(weather, Record), aes(y = High + 3),\n             shape = 25, size = 2.5, fill = \"#9d302f\", color = \"#9d302f\") +\n  geom_text(data = filter(weather, Record), aes(y = High + 7, label = High),\n            size = 3, color = \"#7f2424\") +\n  geom_vline(xintercept = month_ends$dateInYear, color = \"white\", linewidth = 0.4) +\n  scale_x_continuous(breaks = month_labels$x, labels = month_labels$label) +\n  scale_y_continuous(breaks = c(0, 40, 80, 120), limits = c(0, 120)) +\n  labs(title = \"Temperature\", x = NULL, y = \"Degrees Fahrenheit\") +\n  theme_minimal(base_size = 11) +\n  theme(panel.grid.minor = element_blank())\n\nprecip_plot &lt;- ggplot(weather, aes(x = dateInYear)) +\n  geom_area(aes(y = CulmPrec), fill = \"#e6d5ad\") +\n  geom_line(aes(y = CulmPrec), color = \"#1479a8\", linewidth = 0.8) +\n  geom_point(data = filter(weather, RecordP), aes(y = CulmPrec + 0.20),\n             shape = 25, size = 2.3, fill = \"#1479a8\", color = \"#1479a8\") +\n  geom_text(data = month_ends,\n            aes(y = CulmPrec + 0.22, label = sprintf(\"%.2f\", CulmPrec)),\n            size = 2.7, color = \"#1479a8\") +\n  geom_vline(xintercept = month_ends$dateInYear, color = \"white\", linewidth = 0.4) +\n  scale_x_continuous(breaks = month_labels$x, labels = month_labels$label) +\n  labs(title = \"Precipitation\", x = NULL, y = \"Inches\") +\n  theme_minimal(base_size = 11) +\n  theme(panel.grid.minor = element_blank())\n\ngrid.arrange(\n  temperature_plot,\n  precip_plot,\n  ncol = 1,\n  heights = c(2.2, 1),\n  top = \"SFO weather in 2011\"\n)",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P1 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p1.html#resources-reflection-required",
+    "href": "hw02/hw02-p1.html#resources-reflection-required",
+    "title": "HW02-P1 Adv Data Viz",
+    "section": "Resources Reflection (required)",
+    "text": "Resources Reflection (required)\nList the resources you used to help with this assignment then write 3-5 sentence reflection on which resources were most helpful in finishing this task.\nResources:\n\nggplot2 reference: ribbons and area plots\ngridExtra documentation\nggplot2 theme documentation\n\nReflection:\nThe ggplot2 reference was most useful for distinguishing between geom_ribbon() for temperature ranges and geom_area() for cumulative precipitation. The gridExtra documentation showed how to stack both plots and give the temperature panel more vertical space. The theme documentation helped me remove unnecessary grid lines and adjust text so that the two panels read as one graphic.",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P1 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p2.html",
+    "href": "hw02/hw02-p2.html",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "",
+    "text": "Instructions\nTask: Open up the New York Times article A Summer of Strikes, and scroll down to the plot titled “Union membership has fallen sharply over the past four decades (Share of the work force in a union, by industry)”.\nUsing ggplot2 and other tools in R, recreate this plot. Note that you will need to create the data underlying the plot yourself. You can create this data in R with tibble(). You can also write the data in Excel or Google Sheets and export it as a CSV file.\nRequirements:\nBonus: Additional possibilities to enhance your visualization include adjusting the default aesthetics of the arrows, aligning your plots neatly, and adding margins in order to left-align the y-axis text.",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p2.html#instructions",
+    "href": "hw02/hw02-p2.html#instructions",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "",
+    "text": "Overall\n\nPanels for “All workers”, “By Sector”, and “By Industry” are shown.\nArrows showing the change from 1983 to 2022 are shown.\n\nNote: be sure that the arrows all point in the correct direction!\n\n\nThe actual percentages in 1983 and 2022 are shown as text.\nX-axis tick marks are at 0, 25, and 50.\nPlot title says “Union membership has fallen sharply over the past four decades”.\nPlot subtitle says “Share of the work force in a union, by industry”.\n\n\nResource reflection\n\nAt least 1 resource is listed\nAt least 3 sentences about resources and their helpfulness in the task",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p2.html#setup",
+    "href": "hw02/hw02-p2.html#setup",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "Setup",
+    "text": "Setup\n\nCodelibrary(tidyverse)\n\n\n\nCodeunion_data &lt;- tribble(\n  ~panel, ~industry, ~rate_1983, ~rate_2022,\n  \"All workers\", \"All workers\", 20.1, 10.1,\n  \"By sector\", \"Public sector\", 36.7, 33.1,\n  \"By sector\", \"Private sector\", 16.8, 6.0,\n  \"By industry\", \"Transportation and utilities\", 31.7, 15.8,\n  \"By industry\", \"Construction\", 27.5, 12.4,\n  \"By industry\", \"Manufacturing\", 27.1, 7.8,\n  \"By industry\", \"Education and health services\", 17.7, 12.6,\n  \"By industry\", \"Wholesale and retail trade\", 10.8, 4.4,\n  \"By industry\", \"Professional and business services\", 7.3, 2.4\n) |&gt;\n  mutate(\n    panel = factor(panel, levels = c(\"All workers\", \"By sector\", \"By industry\")),\n    industry = fct_inorder(industry)\n  )",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p2.html#visualization",
+    "href": "hw02/hw02-p2.html#visualization",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "Visualization",
+    "text": "Visualization\n\nCodeggplot(union_data, aes(y = industry)) +\n  geom_segment(aes(x = rate_1983, xend = rate_2022, yend = industry),\n               linewidth = 0.8, color = \"#9c9c9c\",\n               arrow = arrow(length = unit(0.13, \"inches\"), type = \"closed\")) +\n  geom_point(aes(x = rate_1983), color = \"#333333\") +\n  geom_text(aes(x = rate_1983, label = paste0(rate_1983, \"%\")),\n            hjust = -0.25, size = 3.2) +\n  geom_text(aes(x = rate_2022, label = paste0(rate_2022, \"%\")),\n            hjust = 1.25, color = \"white\", size = 3.2) +\n  facet_grid(panel ~ ., scales = \"free_y\", space = \"free_y\", switch = \"y\") +\n  scale_x_continuous(breaks = c(0, 25, 50), limits = c(0, 50), position = \"top\") +\n  labs(\n    title = \"Union membership has fallen sharply over the past four decades\",\n    subtitle = \"Share of the work force in a union, by industry\",\n    x = NULL, y = NULL,\n    caption = \"Source: U.S. Bureau of Labor Statistics\"\n  ) +\n  theme_minimal(base_size = 12) +\n  theme(\n    panel.grid.minor = element_blank(),\n    panel.grid.major.y = element_blank(),\n    strip.placement = \"outside\",\n    strip.text.y.left = element_text(angle = 0, face = \"bold\", hjust = 0),\n    axis.text.y = element_text(hjust = 0),\n    plot.title = element_text(face = \"bold\", size = 16),\n    plot.margin = margin(10, 25, 10, 20)\n  )",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "hw02/hw02-p2.html#resources-reflection-required",
+    "href": "hw02/hw02-p2.html#resources-reflection-required",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "Resources Reflection (required)",
+    "text": "Resources Reflection (required)\nList the resources you used to help with this assignment then write 3-5 sentence reflection on which resources were most helpful in finishing this task.\nResources:\n\nNew York Times, “A Summer of Strikes”\nggplot2 reference: line segments and arrows\nBureau of Labor Statistics union membership summary\n\nReflection:\nThe original New York Times graphic was the most useful design reference because it showed how arrows make the direction and size of change immediately visible. The ggplot2 documentation helped me add arrowheads to geom_segment() and control their appearance. The Bureau of Labor Statistics source was useful for checking the overall and sector percentages and understanding what the percentages represent.",
+    "crumbs": [
+      "Homework 02",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
   }
 ]

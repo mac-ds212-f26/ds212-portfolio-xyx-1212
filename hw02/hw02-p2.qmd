@@ -1,0 +1,114 @@
+---
+title: "HW02-P2 Adv Data Viz"
+format: 
+  html: 
+    embed-resources: true
+---
+
+## Instructions
+
+**Task:** Open up the New York Times article [A Summer of Strikes](https://www.nytimes.com/interactive/2023/09/03/business/economy/strikes-union-sag-uaw.html), and scroll down to the plot titled "Union membership has fallen sharply over the past four decades (Share of the work force in a union, by industry)".
+
+![](https://hash-mac.github.io/stat212site-sp26/images/challenge-2-goal.png)
+
+Using `ggplot2` and other tools in R, recreate this plot. Note that you will need to create the data underlying the plot yourself. You can create this data in R with `tibble()`. You can also write the data in Excel or Google Sheets and export it as a CSV file.
+
+**Requirements:**
+
+- Overall
+  - Panels for "All workers", "By Sector", and "By Industry" are shown.
+  - Arrows showing the change from 1983 to 2022 are shown.
+    - Note: be sure that the arrows all point in the correct direction!
+  - The actual percentages in 1983 and 2022 are shown as text.
+  - X-axis tick marks are at 0, 25, and 50.
+  - Plot title says "Union membership has fallen sharply over the past four decades".
+  - Plot subtitle says "Share of the work force in a union, by industry".
+- Resource reflection
+    - At least 1 resource is listed
+    - At least 3 sentences about resources and their helpfulness in the task
+
+**Bonus**: Additional possibilities to enhance your visualization include adjusting the default aesthetics of the arrows, aligning your plots neatly, and adding margins in order to left-align the y-axis text. 
+
+
+
+
+
+## Setup
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+union_data <- tribble(
+  ~panel, ~industry, ~rate_1983, ~rate_2022,
+  "All workers", "All workers", 20.1, 10.1,
+  "By sector", "Public sector", 36.7, 33.1,
+  "By sector", "Private sector", 16.8, 6.0,
+  "By industry", "Transportation and utilities", 31.7, 15.8,
+  "By industry", "Construction", 27.5, 12.4,
+  "By industry", "Manufacturing", 27.1, 7.8,
+  "By industry", "Education and health services", 17.7, 12.6,
+  "By industry", "Wholesale and retail trade", 10.8, 4.4,
+  "By industry", "Professional and business services", 7.3, 2.4
+) |>
+  mutate(
+    panel = factor(panel, levels = c("All workers", "By sector", "By industry")),
+    industry = fct_inorder(industry)
+  )
+```
+
+
+
+
+## Visualization
+
+
+```{r}
+ggplot(union_data, aes(y = industry)) +
+  geom_segment(aes(x = rate_1983, xend = rate_2022, yend = industry),
+               linewidth = 0.8, color = "#9c9c9c",
+               arrow = arrow(length = unit(0.13, "inches"), type = "closed")) +
+  geom_point(aes(x = rate_1983), color = "#333333") +
+  geom_text(aes(x = rate_1983, label = paste0(rate_1983, "%")),
+            hjust = -0.25, size = 3.2) +
+  geom_text(aes(x = rate_2022, label = paste0(rate_2022, "%")),
+            hjust = 1.25, color = "white", size = 3.2) +
+  facet_grid(panel ~ ., scales = "free_y", space = "free_y", switch = "y") +
+  scale_x_continuous(breaks = c(0, 25, 50), limits = c(0, 50), position = "top") +
+  labs(
+    title = "Union membership has fallen sharply over the past four decades",
+    subtitle = "Share of the work force in a union, by industry",
+    x = NULL, y = NULL,
+    caption = "Source: U.S. Bureau of Labor Statistics"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    strip.placement = "outside",
+    strip.text.y.left = element_text(angle = 0, face = "bold", hjust = 0),
+    axis.text.y = element_text(hjust = 0),
+    plot.title = element_text(face = "bold", size = 16),
+    plot.margin = margin(10, 25, 10, 20)
+  )
+```
+
+
+
+## Resources Reflection (required)
+
+List the resources you used to help with this assignment then write 3-5 sentence reflection on which resources were most helpful in finishing this task.
+
+**Resources:**
+
+- [New York Times, “A Summer of Strikes”](https://www.nytimes.com/interactive/2023/09/03/business/economy/strikes-union-sag-uaw.html)
+- [ggplot2 reference: line segments and arrows](https://ggplot2.tidyverse.org/reference/geom_segment.html)
+- [Bureau of Labor Statistics union membership summary](https://www.bls.gov/news.release/union2.nr0.htm)
+
+**Reflection:**
+
+The original New York Times graphic was the most useful design reference because it showed how arrows make the direction and size of change immediately visible. The ggplot2 documentation helped me add arrowheads to `geom_segment()` and control their appearance. The Bureau of Labor Statistics source was useful for checking the overall and sector percentages and understanding what the percentages represent.
+
+
+

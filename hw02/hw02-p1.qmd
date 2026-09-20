@@ -1,0 +1,127 @@
+---
+title: "HW02-P1 Adv Data Viz"
+format: 
+  html: 
+    embed-resources: true
+---
+
+## Instructions
+
+Using `ggplot2` and other tools in R, recreate the original New York Times graphic to the greatest extent possible. Try to get as close as possible to the figure below:
+
+![](https://hash-mac.github.io/ds212site-f26/images/hw1_goal.png){width=600, fig-align="center"}
+
+You will need to use reference pages and documentation to discover necessary tools. For example, you may want to Google search "ggplot multiple plots". When looking through results, check publication dates and use newer references. Some helpful resources could include R documentation, Stack Overflow, and [R cheatsheets](https://rstudio.github.io/cheatsheets/).
+
+
+**Requirements**
+
+- Temperature graph
+    - Bands for the record, normal, and actual highs and lows are shown in the correct colors.
+    - Downward triangles point to the record high temperatures above the red band.
+    - Text displays the record high temperatures above the triangles.
+    - X-axis label: 3-letter month abbreviations appear in the middle of each month.
+    - Y-axis label: Tick marks at 0, 40, 80, and 120 only.
+    - Vertical lines separate the months.
+    - Title of "Temperature" is included.
+- Precipitation
+    - Tan area and blue line reflecting the monthly cumulative precipitation is included.
+    - Text (number) for cumulative precipitation for each month is included at the end of each month just above the blue line.
+    - Downward triangles point to the record precipitation days.
+    - Vertical lines separate the months.
+    - Title of "Precipitation" is included.
+- Overall
+    - Both the temperature and precipitation graphs are in one figure.
+    - The temperature plot takes up more vertical space than the precipitation plot.
+    - The title "SFO weather in 2011" is present.
+- Resource reflection
+    - At least 1 resource is listed
+    - At least 3 sentences about resources and their helpfulness in the task
+
+**Bonus:** If you'd like further practice, recreate the legend in the temperature graph that shows how the colored lines relate to record, normal, and actual highs.
+
+
+## Setup
+
+```{r}
+library(tidyverse)
+library(gridExtra)
+
+weather <- read_csv("../ica/data/processed/weather_clean.csv", show_col_types = FALSE) %>%
+  arrange(dateInYear)
+
+month_labels <- weather %>%
+  group_by(Month) %>%
+  summarize(x = mean(range(dateInYear)), label = first(month_name), .groups = "drop")
+
+month_ends <- weather %>%
+  group_by(Month) %>%
+  slice_max(dateInYear, n = 1, with_ties = FALSE) %>%
+  ungroup()
+```
+
+
+
+## Visualization
+
+```{r}
+temperature_plot <- ggplot(weather, aes(x = dateInYear)) +
+ geom_linerange(
+  aes(ymin = RecordLow, ymax = RecordHigh),
+  color = "#e7d9c7",
+  linewidth = 2) +
+geom_linerange(
+  aes(ymin = NormalLow, ymax = NormalHigh),
+  color = "#c8dded",
+  linewidth = 2) +
+geom_linerange(
+  aes(ymin = Low, ymax = High),
+  color = "#df796c",
+  linewidth = 2) +
+  geom_point(data = filter(weather, Record), aes(y = High + 3),
+             shape = 25, size = 2.5, fill = "#9d302f", color = "#9d302f") +
+  geom_text(data = filter(weather, Record), aes(y = High + 7, label = High),
+            size = 3, color = "#7f2424") +
+  geom_vline(xintercept = month_ends$dateInYear, color = "white", linewidth = 0.4) +
+  scale_x_continuous(breaks = month_labels$x, labels = month_labels$label) +
+  scale_y_continuous(breaks = c(0, 40, 80, 120), limits = c(0, 120)) +
+  labs(title = "Temperature", x = NULL, y = "Degrees Fahrenheit") +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid.minor = element_blank())
+
+precip_plot <- ggplot(weather, aes(x = dateInYear)) +
+  geom_area(aes(y = CulmPrec), fill = "#e6d5ad") +
+  geom_line(aes(y = CulmPrec), color = "#1479a8", linewidth = 0.8) +
+  geom_point(data = filter(weather, RecordP), aes(y = CulmPrec + 0.20),
+             shape = 25, size = 2.3, fill = "#1479a8", color = "#1479a8") +
+  geom_text(data = month_ends,
+            aes(y = CulmPrec + 0.22, label = sprintf("%.2f", CulmPrec)),
+            size = 2.7, color = "#1479a8") +
+  geom_vline(xintercept = month_ends$dateInYear, color = "white", linewidth = 0.4) +
+  scale_x_continuous(breaks = month_labels$x, labels = month_labels$label) +
+  labs(title = "Precipitation", x = NULL, y = "Inches") +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid.minor = element_blank())
+
+grid.arrange(
+  temperature_plot,
+  precip_plot,
+  ncol = 1,
+  heights = c(2.2, 1),
+  top = "SFO weather in 2011"
+)
+```
+
+## Resources Reflection (required)
+
+List the resources you used to help with this assignment then write 3-5 sentence reflection on which resources were most helpful in finishing this task.
+
+**Resources:**
+
+- [ggplot2 reference: ribbons and area plots](https://ggplot2.tidyverse.org/reference/geom_ribbon.html)
+- [gridExtra documentation](https://cran.r-project.org/package=gridExtra)
+- [ggplot2 theme documentation](https://ggplot2.tidyverse.org/reference/theme.html)
+
+**Reflection:**
+
+The ggplot2 reference was most useful for distinguishing between `geom_ribbon()` for temperature ranges and `geom_area()` for cumulative precipitation. The gridExtra documentation showed how to stack both plots and give the temperature panel more vertical space. The theme documentation helped me remove unnecessary grid lines and adjust text so that the two panels read as one graphic.

@@ -70,6 +70,11 @@ book:
       - tt/2025-07-15.qmd
       - tt/2026-09-08.qmd
 
+    - part: "Homework 02"
+      chapters:
+      - hw02/hw02-p1.qmd
+      - hw02/hw02-p2.qmd
+
     - part: "Pre-Class Learnings"
       chapters:
       - pcl/pcl.qmd
