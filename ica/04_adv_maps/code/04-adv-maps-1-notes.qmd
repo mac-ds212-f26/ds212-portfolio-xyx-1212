@@ -196,8 +196,7 @@ ggplot() +
   geom_sf(data = mn_cities) +
   ggthemes::theme_map() +
   theme(
-    plot.background = element_rect(fill = "white", color = NA)
-  )
+    plot.background = element_rect(fill = "white", color = NA))
 
 ```
 
@@ -250,7 +249,27 @@ Build on our existing map by adding a raster layer for elevation as the backgrou
 - Add in the layers from the map above to show the largest cities and the county outlines. To remove a background color, use `fill = NA`.
 
 ```{r}
-
+ggplot() +
+  geom_raster(
+    data = elev_df,
+    aes(x = x, y = y, fill = elevation)) +
+  geom_sf(
+    data = mn_counties,
+    fill = NA,
+    color = "black") +
+  geom_sf(
+    data = mn_cities |> filter(population >= 10000),
+    aes(color = population, size = population)) +
+  scale_fill_gradient(
+    low = "darkgreen",
+    high = "white") +
+  scale_color_viridis_c() +
+  labs(
+    title = "Minnesota Elevation and Cities",
+    fill = "Elevation",
+    color = "Population",
+    size = "Population") +
+  ggthemes::theme_map()
 
 ```
 
@@ -291,11 +310,19 @@ ggplot() +
     labs(title = "Twin Cities with Population >= 10,000") + 
     ggthemes::theme_map() +
     theme(legend.position = "none") # remove legend
+dir.create("../figures", showWarnings = FALSE)
+
+ggsave(
+  "../figures/tc_map_zoom.png",
+  width = 8,
+  height = 6
+)
 ```
 
 Let's add to the above code chunk to save the map above to an image file called `tc_map_zoom.png` in the `figures` folder. The code example below shows a general template for saving a plot to file. Choose a reasonable width and height. (There are also `jpeg()` and `pdf()` functions for writing images.)
 
 ```{r save_plot_example, eval=FALSE}
+
 ```
 
 
@@ -311,21 +338,20 @@ mn_cities_leaf <- mn_cities |> st_transform(4326)
 
 cities_per_county <- st_join(
   mn_cities_leaf,
-  select(mn_counties_leaf, county_name = name)
-) |>
-  st_drop_geometry() |>
-  count(county_name, name = "n") |>
+  select(mn_counties_leaf, county_name = name)) %>%
+  st_drop_geometry() %>%
+  count(county_name, name = "n") %>%
   rename(name = county_name)
 
-mn_counties_leaf |> 
-    filter(name %in% c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott")) |>
-    left_join(cities_per_county) |>
-    leaflet() |> 
-    addProviderTiles("CartoDB.Positron") |> 
+mn_counties_leaf %>% 
+    filter(name %in% c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott")) %>%
+    left_join(cities_per_county) %>%
+    leaflet() %>% 
+    addProviderTiles("CartoDB.Positron") %>%
     addPolygons(
         color = "#444444", weight = 1, smoothFactor = 0.5, opacity = 1.0,
         fillOpacity = 0.5, fillColor = ~colorQuantile("YlOrRd", n)(n),
-        highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)) |>
+        highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)) %>%
     addCircles(data = mn_cities_leaf |> filter(county %in% paste(c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott"), "County")), color = "#444444")
 ```
 

@@ -86,8 +86,7 @@ geom_linerange(
   scale_x_continuous(breaks = month_labels$x, labels = month_labels$label) +
   scale_y_continuous(breaks = c(0, 40, 80, 120), limits = c(0, 120)) +
   labs(title = "Temperature", x = NULL, y = "Degrees Fahrenheit") +
-  theme_minimal(base_size = 11) +
-  theme(panel.grid.minor = element_blank())
+  theme_classic()
 
 precip_plot <- ggplot(weather, aes(x = dateInYear)) +
   geom_area(aes(y = CulmPrec), fill = "#e6d5ad") +
@@ -100,8 +99,7 @@ precip_plot <- ggplot(weather, aes(x = dateInYear)) +
   geom_vline(xintercept = month_ends$dateInYear, color = "white", linewidth = 0.4) +
   scale_x_continuous(breaks = month_labels$x, labels = month_labels$label) +
   labs(title = "Precipitation", x = NULL, y = "Inches") +
-  theme_minimal(base_size = 11) +
-  theme(panel.grid.minor = element_blank())
+  theme_classic()
 
 grid.arrange(
   temperature_plot,
