@@ -77,6 +77,7 @@ Or you can create one based on available data using
 
 ```{r}
 library(tidyverse)
+library(lubridate)
 ```
 
 ```{r create_vec_examples}
@@ -184,8 +185,6 @@ Note: `ifelse()` (from base R) and `if_else()` (from tidyverse) are different fu
 Here are few examples comparing `ifelse()` and `if_else()`:
 
 ```{r}
-#| error: true
-
 x <- c(-1, -2, 4, 9, NA)
 
 ifelse(x > 0, 'positive', 'negative')
@@ -193,7 +192,7 @@ if_else(x > 0, 'positive', 'negative')
 
 
 ifelse(x > 0, 1, 'negative') # Bad: doesn't complain with combo of data types
-if_else(x > 0, 1, 'negative') # Good:noisy to make sure you catch issues
+if_else(x > 0, 1, 0, missing = NA_real_) # Good: uses one consistent numeric type
 
 if_else(x > 0, 'positive', 'negative', missing = 'missing') # Good: can explicitly handle NA
 
@@ -322,6 +321,7 @@ The `lubridate` package contains useful functions for working with dates and tim
 We'll use the `lakers` dataset in the `lubridate` package to illustrate some examples.
 
 ```{r load_lakers}
+data(lakers, package = "lubridate")
 lakers <- as_tibble(lakers)
 head(lakers)
 ```
@@ -405,8 +405,7 @@ factor(months2, levels = month.abb)
 Because the `NA` is introduced silently (without any error or warnings), this can be dangerous. It might be better to use the `fct()` function in the `forcats` package instead:
 
 ```{r fct_forcats}
-#| error: true
-
+months2 <- c("Jan", "Mar")
 fct(months2, levels = month.abb)
 ```
 

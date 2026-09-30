@@ -69,11 +69,18 @@ book:
       - tt/2025-07-08.qmd
       - tt/2025-07-15.qmd
       - tt/2026-09-08.qmd
+      - tt/2026-09-15.qmd
+      - tt/2026-09-22.qmd
 
     - part: "Homework 02"
       chapters:
       - hw02/hw02-p1.qmd
       - hw02/hw02-p2.qmd
+
+    - part: "Homework 03"
+      chapters:
+      - hw03/hw03-p1.qmd
+      - hw03/hw03-p2.qmd
 
     - part: "Pre-Class Learnings"
       chapters:
@@ -86,6 +93,8 @@ book:
       - ica/cleaning.qmd
       - ica/03-adv-ggplot-notes.qmd
       - ica/04_adv_maps/code/04-adv-maps-1-notes.qmd
+      - ica/06-wrangling-1-notes.qmd
+      - ica/08-missing-data.qmd
 
     - part: "Extras"
       chapters:
