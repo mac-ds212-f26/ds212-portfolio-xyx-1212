@@ -70,3 +70,7 @@ _freeze/
 *.log
 *.aux
 *.toc
+
+# HW03 downloaded data and private Census API key
+/hw03/data/raw/
+/hw03/census_api_key.txt
