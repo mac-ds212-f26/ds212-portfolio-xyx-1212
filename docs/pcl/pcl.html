@@ -503,7 +503,17 @@ cookieconsent.run({
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../ica/07-wrangling-2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">7 Adv Data wrangling II</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../ica/08-missing-data.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">8 Missing Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ica/09-functions.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">9 Functions</span></a>
   </div>
 </li>
       </ul>
@@ -541,6 +551,18 @@ cookieconsent.run({
   <ul>
   <li><a href="#r" id="toc-r" class="nav-link active" data-scroll-target="#r">R</a></li>
   <li><a href="#quarto" id="toc-quarto" class="nav-link" data-scroll-target="#quarto">Quarto</a></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul class="collapse">
+  <li><a href="#why-write-functions" id="toc-why-write-functions" class="nav-link" data-scroll-target="#why-write-functions">Why write functions?</a></li>
+  <li><a href="#main-parts-of-a-function" id="toc-main-parts-of-a-function" class="nav-link" data-scroll-target="#main-parts-of-a-function">Main parts of a function</a></li>
+  <li><a href="#calling-a-function" id="toc-calling-a-function" class="nav-link" data-scroll-target="#calling-a-function">Calling a function</a></li>
+  <li><a href="#a-basic-workflow-for-writing-a-function" id="toc-a-basic-workflow-for-writing-a-function" class="nav-link" data-scroll-target="#a-basic-workflow-for-writing-a-function">A basic workflow for writing a function</a></li>
+  <li><a href="#vector-and-data-frame-functions" id="toc-vector-and-data-frame-functions" class="nav-link" data-scroll-target="#vector-and-data-frame-functions">Vector and data-frame functions</a></li>
+  <li><a href="#conditional-execution" id="toc-conditional-execution" class="nav-link" data-scroll-target="#conditional-execution">Conditional execution</a></li>
+  <li><a href="#scope-and-environments" id="toc-scope-and-environments" class="nav-link" data-scroll-target="#scope-and-environments">Scope and environments</a></li>
+  <li><a href="#functions-with-tidyverse-verbs" id="toc-functions-with-tidyverse-verbs" class="nav-link" data-scroll-target="#functions-with-tidyverse-verbs">Functions with tidyverse verbs</a></li>
+  <li><a href="#important-checks" id="toc-important-checks" class="nav-link" data-scroll-target="#important-checks">Important checks</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -579,10 +601,114 @@ cookieconsent.run({
 <figcaption>from qmd4sci.njtierney.com</figcaption>
 </figure>
 </div>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<section id="why-write-functions" class="level3">
+<h3 class="anchored" data-anchor-id="why-write-functions">Why write functions?</h3>
+<ul>
+<li>If code is copied three or more times, turn it into a function.</li>
+<li>Functions reduce copy-and-paste mistakes.</li>
+<li>When the code changes, it only needs to be updated in one place.</li>
+<li>A clear function name makes code easier to understand and reuse.</li>
+</ul>
+</section>
+<section id="main-parts-of-a-function" class="level3">
+<h3 class="anchored" data-anchor-id="main-parts-of-a-function">Main parts of a function</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a>function_name <span class="ot">&lt;-</span> <span class="cf">function</span>(argument, <span class="at">optional_argument =</span> default) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a>  result <span class="ot">&lt;-</span> argument <span class="sc">+</span> optional_argument</span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><strong>Name:</strong> <code>function_name</code></li>
+<li><strong>Arguments:</strong> the inputs listed inside <code>function()</code>.</li>
+<li><strong>Default:</strong> a value used when an optional argument is not supplied.</li>
+<li><strong>Body:</strong> the code inside <code>{}</code>.</li>
+<li><strong>Return value:</strong> the output. R returns the last evaluated expression, but <code>return()</code> makes the output explicit.</li>
+</ul>
+</section>
+<section id="calling-a-function" class="level3">
+<h3 class="anchored" data-anchor-id="calling-a-function">Calling a function</h3>
+<ul>
+<li><strong>By position:</strong> <code>function_name(2, 4)</code> depends on argument order.</li>
+<li><strong>By name:</strong> <code>function_name(argument = 2, optional_argument = 4)</code> is clearer.</li>
+<li>An argument with a default value can be omitted.</li>
+<li>Arguments without defaults must be supplied.</li>
+</ul>
+</section>
+<section id="a-basic-workflow-for-writing-a-function" class="level3">
+<h3 class="anchored" data-anchor-id="a-basic-workflow-for-writing-a-function">A basic workflow for writing a function</h3>
+<ol type="1">
+<li>Make the code work for one example.</li>
+<li>Identify which values or variables will change.</li>
+<li>Turn the changing parts into arguments.</li>
+<li>Give the function and its arguments informative names.</li>
+<li>Decide what the function should return.</li>
+<li>Test normal cases, missing values, and unusual inputs.</li>
+</ol>
+</section>
+<section id="vector-and-data-frame-functions" class="level3">
+<h3 class="anchored" data-anchor-id="vector-and-data-frame-functions">Vector and data-frame functions</h3>
+<ul>
+<li>A vector function takes one or more vectors and returns a vector.</li>
+<li>A data-frame function takes a data frame and usually returns a data frame or plot.</li>
+<li>Vectorized functions work on every element of a vector.</li>
+<li><code>if</code> checks one logical condition; use <code>if_else()</code> or <code>case_when()</code> for a logical vector.</li>
+</ul>
+</section>
+<section id="conditional-execution" class="level3">
+<h3 class="anchored" data-anchor-id="conditional-execution">Conditional execution</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="cf">if</span> (condition) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a>  <span class="co"># code used when TRUE</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-label="3"></a>} <span class="cf">else</span> <span class="cf">if</span> (other_condition) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-label="4"></a>  <span class="co"># another condition</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-label="5"></a>} <span class="cf">else</span> {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-label="6"></a>  <span class="co"># code used otherwise</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-label="7"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li>Conditions are checked from top to bottom.</li>
+<li><code>if</code> requires a single <code>TRUE</code> or <code>FALSE</code> value.</li>
+</ul>
+</section>
+<section id="scope-and-environments" class="level3">
+<h3 class="anchored" data-anchor-id="scope-and-environments">Scope and environments</h3>
+<ul>
+<li>Objects created inside a function belong to its local environment.</li>
+<li>R first looks for a name inside the function, then in parent environments, then in the global environment, and finally in loaded packages.</li>
+<li>A local object can mask an object with the same name outside the function.</li>
+<li>Objects created inside a function are not available outside unless returned.</li>
+<li>Depending on global objects inside a function is risky because changing the global object can change the function’s result.</li>
+<li>A function should receive the objects it needs through arguments.</li>
+</ul>
+</section>
+<section id="functions-with-tidyverse-verbs" class="level3">
+<h3 class="anchored" data-anchor-id="functions-with-tidyverse-verbs">Functions with tidyverse verbs</h3>
+<p>Tidyverse verbs use tidy evaluation. When an argument represents a column name, embrace it with <code>{ }</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a>group_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(df, group_var, value_var) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a>    <span class="fu">group_by</span>({{ group_var }}) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>    <span class="fu">summarize</span>(<span class="at">mean =</span> <span class="fu">mean</span>({{ value_var }}))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li>Use <code>{ variable }</code> for one user-supplied column.</li>
+<li>Use <code>pick({{ variables }})</code> when the argument may select multiple columns.</li>
+<li>Use <code>:=</code> when the name of a newly created variable is supplied or generated inside the function.</li>
+</ul>
+</section>
+<section id="important-checks" class="level3">
+<h3 class="anchored" data-anchor-id="important-checks">Important checks</h3>
+<ul>
+<li>Does the function work for all required examples?</li>
+<li>Are missing values handled intentionally with <code>na.rm</code> when appropriate?</li>
+<li>Are argument names and defaults clear?</li>
+<li>Does the function depend only on its arguments?</li>
+<li>Is the returned object the correct type and length?</li>
+</ul>
 
 
 <!-- -->
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1067,17 +1193,119 @@ cookieconsent.run({
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="an">title:</span><span class="co"> "Pre-Class Learning Summaries"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co">---</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a><span class="fu">## R</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="al">![](0808-r.png)</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a><span class="fu">## Quarto</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a><span class="al">![from qmd4sci.njtierney.com](0810-quarto.jpeg)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a><span class="an">title:</span><span class="co"> "Pre-Class Learning Summaries"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a><span class="co">---</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a><span class="fu">## R</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-label="6"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-label="7"></a><span class="al">![](0808-r.png)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-label="8"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-label="9"></a><span class="fu">## Quarto</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-label="10"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-label="11"></a><span class="al">![from qmd4sci.njtierney.com](0810-quarto.jpeg)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-label="12"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-label="13"></a><span class="fu">## Functions</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-label="14"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-label="15"></a><span class="fu">### Why write functions?</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-label="16"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-label="17"></a><span class="ss">- </span>If code is copied three or more times, turn it into a function.</span>
+<span id="cb4-18"><a href="#cb4-18" aria-label="18"></a><span class="ss">- </span>Functions reduce copy-and-paste mistakes.</span>
+<span id="cb4-19"><a href="#cb4-19" aria-label="19"></a><span class="ss">- </span>When the code changes, it only needs to be updated in one place.</span>
+<span id="cb4-20"><a href="#cb4-20" aria-label="20"></a><span class="ss">- </span>A clear function name makes code easier to understand and reuse.</span>
+<span id="cb4-21"><a href="#cb4-21" aria-label="21"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-label="22"></a><span class="fu">### Main parts of a function</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-label="23"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-label="24"></a><span class="in">```r</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-label="25"></a>function_name <span class="ot">&lt;-</span> <span class="cf">function</span>(argument, <span class="at">optional_argument =</span> default) {</span>
+<span id="cb4-26"><a href="#cb4-26" aria-label="26"></a>  result <span class="ot">&lt;-</span> argument <span class="sc">+</span> optional_argument</span>
+<span id="cb4-27"><a href="#cb4-27" aria-label="27"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-label="28"></a>}</span>
+<span id="cb4-29"><a href="#cb4-29" aria-label="29"></a><span class="in">```</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-label="30"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-label="31"></a><span class="ss">- </span>**Name:** <span class="in">`function_name`</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-label="32"></a><span class="ss">- </span>**Arguments:** the inputs listed inside <span class="in">`function()`</span>.</span>
+<span id="cb4-33"><a href="#cb4-33" aria-label="33"></a><span class="ss">- </span>**Default:** a value used when an optional argument is not supplied.</span>
+<span id="cb4-34"><a href="#cb4-34" aria-label="34"></a><span class="ss">- </span>**Body:** the code inside <span class="in">`{}`</span>.</span>
+<span id="cb4-35"><a href="#cb4-35" aria-label="35"></a><span class="ss">- </span>**Return value:** the output. R returns the last evaluated expression, but</span>
+<span id="cb4-36"><a href="#cb4-36" aria-label="36"></a>  <span class="in">`return()`</span> makes the output explicit.</span>
+<span id="cb4-37"><a href="#cb4-37" aria-label="37"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-label="38"></a><span class="fu">### Calling a function</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-label="39"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-label="40"></a><span class="ss">- </span>**By position:** <span class="in">`function_name(2, 4)`</span> depends on argument order.</span>
+<span id="cb4-41"><a href="#cb4-41" aria-label="41"></a><span class="ss">- </span>**By name:** <span class="in">`function_name(argument = 2, optional_argument = 4)`</span> is clearer.</span>
+<span id="cb4-42"><a href="#cb4-42" aria-label="42"></a><span class="ss">- </span>An argument with a default value can be omitted.</span>
+<span id="cb4-43"><a href="#cb4-43" aria-label="43"></a><span class="ss">- </span>Arguments without defaults must be supplied.</span>
+<span id="cb4-44"><a href="#cb4-44" aria-label="44"></a></span>
+<span id="cb4-45"><a href="#cb4-45" aria-label="45"></a><span class="fu">### A basic workflow for writing a function</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-label="46"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-label="47"></a><span class="ss">1. </span>Make the code work for one example.</span>
+<span id="cb4-48"><a href="#cb4-48" aria-label="48"></a><span class="ss">2. </span>Identify which values or variables will change.</span>
+<span id="cb4-49"><a href="#cb4-49" aria-label="49"></a><span class="ss">3. </span>Turn the changing parts into arguments.</span>
+<span id="cb4-50"><a href="#cb4-50" aria-label="50"></a><span class="ss">4. </span>Give the function and its arguments informative names.</span>
+<span id="cb4-51"><a href="#cb4-51" aria-label="51"></a><span class="ss">5. </span>Decide what the function should return.</span>
+<span id="cb4-52"><a href="#cb4-52" aria-label="52"></a><span class="ss">6. </span>Test normal cases, missing values, and unusual inputs.</span>
+<span id="cb4-53"><a href="#cb4-53" aria-label="53"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-label="54"></a><span class="fu">### Vector and data-frame functions</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-label="55"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-label="56"></a><span class="ss">- </span>A vector function takes one or more vectors and returns a vector.</span>
+<span id="cb4-57"><a href="#cb4-57" aria-label="57"></a><span class="ss">- </span>A data-frame function takes a data frame and usually returns a data frame or</span>
+<span id="cb4-58"><a href="#cb4-58" aria-label="58"></a>  plot.</span>
+<span id="cb4-59"><a href="#cb4-59" aria-label="59"></a><span class="ss">- </span>Vectorized functions work on every element of a vector.</span>
+<span id="cb4-60"><a href="#cb4-60" aria-label="60"></a><span class="ss">- </span><span class="in">`if`</span> checks one logical condition; use <span class="in">`if_else()`</span> or <span class="in">`case_when()`</span> for a</span>
+<span id="cb4-61"><a href="#cb4-61" aria-label="61"></a>  logical vector.</span>
+<span id="cb4-62"><a href="#cb4-62" aria-label="62"></a></span>
+<span id="cb4-63"><a href="#cb4-63" aria-label="63"></a><span class="fu">### Conditional execution</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-label="64"></a></span>
+<span id="cb4-65"><a href="#cb4-65" aria-label="65"></a><span class="in">```r</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-label="66"></a><span class="cf">if</span> (condition) {</span>
+<span id="cb4-67"><a href="#cb4-67" aria-label="67"></a>  <span class="co"># code used when TRUE</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-label="68"></a>} <span class="cf">else</span> <span class="cf">if</span> (other_condition) {</span>
+<span id="cb4-69"><a href="#cb4-69" aria-label="69"></a>  <span class="co"># another condition</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-label="70"></a>} <span class="cf">else</span> {</span>
+<span id="cb4-71"><a href="#cb4-71" aria-label="71"></a>  <span class="co"># code used otherwise</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-label="72"></a>}</span>
+<span id="cb4-73"><a href="#cb4-73" aria-label="73"></a><span class="in">```</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-label="74"></a></span>
+<span id="cb4-75"><a href="#cb4-75" aria-label="75"></a><span class="ss">- </span>Conditions are checked from top to bottom.</span>
+<span id="cb4-76"><a href="#cb4-76" aria-label="76"></a><span class="ss">- </span><span class="in">`if`</span> requires a single <span class="in">`TRUE`</span> or <span class="in">`FALSE`</span> value.</span>
+<span id="cb4-77"><a href="#cb4-77" aria-label="77"></a></span>
+<span id="cb4-78"><a href="#cb4-78" aria-label="78"></a><span class="fu">### Scope and environments</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-label="79"></a></span>
+<span id="cb4-80"><a href="#cb4-80" aria-label="80"></a><span class="ss">- </span>Objects created inside a function belong to its local environment.</span>
+<span id="cb4-81"><a href="#cb4-81" aria-label="81"></a><span class="ss">- </span>R first looks for a name inside the function, then in parent environments,</span>
+<span id="cb4-82"><a href="#cb4-82" aria-label="82"></a>  then in the global environment, and finally in loaded packages.</span>
+<span id="cb4-83"><a href="#cb4-83" aria-label="83"></a><span class="ss">- </span>A local object can mask an object with the same name outside the function.</span>
+<span id="cb4-84"><a href="#cb4-84" aria-label="84"></a><span class="ss">- </span>Objects created inside a function are not available outside unless returned.</span>
+<span id="cb4-85"><a href="#cb4-85" aria-label="85"></a><span class="ss">- </span>Depending on global objects inside a function is risky because changing the</span>
+<span id="cb4-86"><a href="#cb4-86" aria-label="86"></a>  global object can change the function's result.</span>
+<span id="cb4-87"><a href="#cb4-87" aria-label="87"></a><span class="ss">- </span>A function should receive the objects it needs through arguments.</span>
+<span id="cb4-88"><a href="#cb4-88" aria-label="88"></a></span>
+<span id="cb4-89"><a href="#cb4-89" aria-label="89"></a><span class="fu">### Functions with tidyverse verbs</span></span>
+<span id="cb4-90"><a href="#cb4-90" aria-label="90"></a></span>
+<span id="cb4-91"><a href="#cb4-91" aria-label="91"></a>Tidyverse verbs use tidy evaluation. When an argument represents a column name,</span>
+<span id="cb4-92"><a href="#cb4-92" aria-label="92"></a>embrace it with <span class="in">`{ }`</span>:</span>
+<span id="cb4-93"><a href="#cb4-93" aria-label="93"></a></span>
+<span id="cb4-94"><a href="#cb4-94" aria-label="94"></a><span class="in">```r</span></span>
+<span id="cb4-95"><a href="#cb4-95" aria-label="95"></a>group_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(df, group_var, value_var) {</span>
+<span id="cb4-96"><a href="#cb4-96" aria-label="96"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-label="97"></a>    <span class="fu">group_by</span>({{ group_var }}) <span class="sc">|&gt;</span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-label="98"></a>    <span class="fu">summarize</span>(<span class="at">mean =</span> <span class="fu">mean</span>({{ value_var }}))</span>
+<span id="cb4-99"><a href="#cb4-99" aria-label="99"></a>}</span>
+<span id="cb4-100"><a href="#cb4-100" aria-label="100"></a><span class="in">```</span></span>
+<span id="cb4-101"><a href="#cb4-101" aria-label="101"></a></span>
+<span id="cb4-102"><a href="#cb4-102" aria-label="102"></a><span class="ss">- </span>Use <span class="in">`{ variable }`</span> for one user-supplied column.</span>
+<span id="cb4-103"><a href="#cb4-103" aria-label="103"></a><span class="ss">- </span>Use <span class="in">`pick({{ variables }})`</span> when the argument may select multiple columns.</span>
+<span id="cb4-104"><a href="#cb4-104" aria-label="104"></a><span class="ss">- </span>Use <span class="in">`:=`</span> when the name of a newly created variable is supplied or generated</span>
+<span id="cb4-105"><a href="#cb4-105" aria-label="105"></a>  inside the function.</span>
+<span id="cb4-106"><a href="#cb4-106" aria-label="106"></a></span>
+<span id="cb4-107"><a href="#cb4-107" aria-label="107"></a><span class="fu">### Important checks</span></span>
+<span id="cb4-108"><a href="#cb4-108" aria-label="108"></a></span>
+<span id="cb4-109"><a href="#cb4-109" aria-label="109"></a><span class="ss">- </span>Does the function work for all required examples?</span>
+<span id="cb4-110"><a href="#cb4-110" aria-label="110"></a><span class="ss">- </span>Are missing values handled intentionally with <span class="in">`na.rm`</span> when appropriate?</span>
+<span id="cb4-111"><a href="#cb4-111" aria-label="111"></a><span class="ss">- </span>Are argument names and defaults clear?</span>
+<span id="cb4-112"><a href="#cb4-112" aria-label="112"></a><span class="ss">- </span>Does the function depend only on its arguments?</span>
+<span id="cb4-113"><a href="#cb4-113" aria-label="113"></a><span class="ss">- </span>Is the returned object the correct type and length?</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
