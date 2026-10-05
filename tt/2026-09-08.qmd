@@ -1,0 +1,46 @@
+---
+title: "The Cappuccino Index"
+author: "Xingyuan Xu"
+format: html
+---
+
+## Question
+
+Which countries require the most working time to afford a small cappuccino, and how large are the samples behind these estimates?
+
+## Data
+
+A cappuccino's price alone does not tell us how affordable it is. The Cappuccino Index compares prices with barista wages and reports the working time needed to afford a small cappuccino. Higher values mean more working time. Tips are excluded.
+
+The data come from the [TidyTuesday project](https://github.com/rfordatascience/tidytuesday/blob/main/data/2026/2026-09-08/readme.md), using figures shared by James Hoffmann. The dataset includes 2,594 cafes across 87 countries. The country-level index is calculated as the sum of cappuccino prices divided by the sum of hourly wages, multiplied by 60.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+cappuccino_index <- read_csv("cappuccino_index.csv")
+cappuccino_index$country <- gsub("\u00a0", " ", cappuccino_index$country)
+```
+
+## Visualization
+
+```{r}
+country_index <- arrange(cappuccino_index, desc(index))
+country_index <- slice_head(country_index, n = 10)
+
+ggplot(
+  country_index,
+  aes(
+    x = fct_reorder(country, index),
+    y = index)) +
+  geom_col(width = 0.60, fill = "lightblue3") +
+  labs(
+    title = "Pakistan tops the Cappuccino Index",
+    subtitle = "Ten highest values; Pakistan's estimate uses only two cafes",
+    x = NULL,
+    y = "Working time to afford a small cappuccino (minutes)") +
+  coord_flip() +
+  theme_classic()
+```
+
+Pakistan has the highest index, at about 277 minutes, followed by Qatar and Djibouti. However, eight of the ten countries shown have fewer than ten cafes in the sample, including just one cafe each for Qatar and Djibouti. India and the Philippines each have eleven. These figures suggest large differences in affordability, but the small samples make the rankings uncertain. They describe the cafes in the dataset and should not be treated as definitive national estimates.

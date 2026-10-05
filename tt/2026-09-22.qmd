@@ -1,0 +1,63 @@
+---
+title: "Changes in Urban Green Area"
+author: "Xingyuan Xu"
+format: html
+---
+
+## Question
+
+Which cities had the largest increases and decreases in the share of green area between 1990 and 2025?
+
+## Data
+
+The data come from the [TidyTuesday project](https://github.com/rfordatascience/tidytuesday/tree/main/data/2026/2026-09-22) and were originally published by the UN-Habitat Urban Indicators Database.
+Green area includes long-term vegetation such as trees, forests, shrubs, and perennial grasses, but does not include water.
+
+```{r}
+#| message: false
+
+library(tidyverse)
+
+urban <- read_csv("urban_2026-09-22.csv")
+```
+
+## Visualization
+
+```{r}
+green_change <- urban %>%
+  select(countryOrTerritoryName, cityName, year,
+         averageShareOfGreenAreaInCityUrbanAreaPct) %>%
+  filter(year %in% c(1990, 2025)) %>%
+  pivot_wider(
+    names_from = year,
+    values_from = averageShareOfGreenAreaInCityUrbanAreaPct,
+    names_prefix = "year_") %>%
+  filter(!is.na(year_1990), !is.na(year_2025)) %>%
+  mutate(
+    change = year_2025 - year_1990,
+    city = paste(cityName, countryOrTerritoryName, sep = ", "))
+
+cities_to_plot <- bind_rows(
+  slice_min(green_change, change, n = 5),
+  slice_max(green_change, change, n = 5)) %>%
+  mutate(direction = if_else(change > 0, "Increase", "Decrease"))
+
+ggplot(cities_to_plot,
+       aes(x = fct_reorder(city, change), y = change, fill = direction)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("Decrease" = "darkorange",
+                               "Increase" = "darkgreen")) +
+  labs(
+    title = "Bissau had the largest decline in green-area share",
+    subtitle = "Five largest increases and decreases from 1990 to 2025",
+    x = NULL,
+    y = "Change in green area (percentage points)",
+    fill = NULL,
+    caption = "Source: UN-Habitat via TidyTuesday") +
+  theme_classic()
+```
+
+Bissau had by far the largest decrease among cities with data in both years, falling by about 63 percentage points.
+The largest increases were much smaller: Leon had the greatest increase at about 15 percentage points.
+These values describe changes within the urban boundaries used by UN-Habitat and do not by themselves explain why the changes occurred.
