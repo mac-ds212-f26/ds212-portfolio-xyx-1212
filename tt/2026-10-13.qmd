@@ -1,0 +1,52 @@
+---
+title: "Frogs and Toads"
+author: "Xingyuan Xu"
+format: html
+---
+
+## Question
+
+Which frog and toad families contain the most species in the AmphibiaWeb data?
+
+## Data
+
+The data come from the [TidyTuesday project](https://github.com/rfordatascience/tidytuesday/tree/main/data/2026/2026-10-13) and were collected by [AmphibiaWeb](https://amphibiaweb.org/).
+Each row represents one frog or toad species.
+
+```{r}
+#| message: false
+
+library(tidyverse)
+
+frogs <- read_csv(
+  "frogs_and_toads_amphibiaweb.csv",
+  show_col_types = FALSE
+)
+```
+
+## Visualization
+
+```{r}
+top_families <- frogs |>
+  filter(!is.na(family)) |>
+  count(family, sort = TRUE) |>
+  slice_head(n = 10)
+
+ggplot(top_families, aes(x = reorder(family, n), y = n)) +
+  geom_col(fill = "#4F8A5B") +
+  geom_text(aes(label = n), hjust = -0.2) +
+  coord_flip() +
+  ylim(0, 1200) +
+  labs(
+    title = "Families with the most frog and toad species",
+    subtitle = "Hylidae has more than 1,000 species in the AmphibiaWeb data",
+    x = NULL,
+    y = "Number of species",
+    caption = "TidyTuesday 2026-10-13 | Source: AmphibiaWeb"
+  ) +
+  theme_classic()
+```
+
+Hylidae is the largest family in the dataset with 1,086 species.
+Strabomantidae and Microhylidae follow with 840 and 768 species.
+The differences show that frog and toad species are not distributed evenly across families.

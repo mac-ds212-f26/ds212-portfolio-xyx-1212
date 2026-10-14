@@ -1,0 +1,60 @@
+---
+title: "Dead Sea Scrolls Manuscripts"
+author: "Xingyuan Xu"
+format: html
+---
+
+## Question
+
+Which identified works appear most frequently in the collection, and how does their canonical status differ?
+
+## Data
+
+The data come from the [TidyTuesday project](https://github.com/rfordatascience/tidytuesday/tree/main/data/2026/2026-09-15). The original source is the Israel Antiquities Authority's Leon Levy Dead Sea Scrolls Digital Library.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+dead_sea_scrolls <- read_csv("dead_sea_scrolls.csv")
+```
+
+## Visualization
+
+```{r}
+book_counts <- count(
+  filter(
+    dead_sea_scrolls,
+    !is.na(biblical_book),
+    canon_status != "Unidentified"),
+  biblical_book,
+  canon_status, sort = TRUE)
+book_counts <- slice_head(book_counts, n = 10)
+
+ggplot(
+  book_counts,
+  aes(
+    x = fct_reorder(biblical_book, n),
+    y = n,
+    fill = canon_status)) +
+  geom_col(width = 0.60) +
+  geom_hline(
+    yintercept = mean(book_counts$n),
+    linetype = "dashed",
+    color = "gray") +
+  scale_fill_manual(
+    values = c(
+      "Protocanonical" = "darkred",
+      "Deuterocanonical" = "lightyellow",
+      "Non-canonical" = "lightblue3")) +
+  labs(
+    title = "Psalms and Deuteronomy appear most frequently",
+    subtitle = "Ten most common identified works in the collection",
+    x = NULL,
+    y = "Number of manuscripts",
+    fill = "Canonical status")+
+    coord_flip() +
+  theme_classic()
+```
+
+Psalms and Deuteronomy are the two most frequently represented identified works in the dataset. The chart also shows that frequently represented works include both protocanonical texts and non-canonical works, such as Phylactery.

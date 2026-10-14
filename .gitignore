@@ -70,3 +70,26 @@ _freeze/
 *.log
 *.aux
 *.toc
+
+# HW03 downloaded data and private Census API key
+/hw03/data/raw/
+/hw03/census_api_key.txt
+
+# Publish the new course pages generated for the portfolio
+!/docs/
+/docs/*
+!/docs/ica/
+/docs/ica/*
+!/docs/ica/09-functions.html
+!/docs/ica/09-functions_files/
+!/docs/ica/09-functions_files/**
+!/docs/ica/10-base-r.html
+!/docs/ica/11-iteration-1.html
+!/docs/tt/
+/docs/tt/*
+!/docs/tt/2026-10-06.html
+!/docs/tt/2026-10-06_files/
+!/docs/tt/2026-10-06_files/**
+!/docs/tt/2026-10-13.html
+!/docs/tt/2026-10-13_files/
+!/docs/tt/2026-10-13_files/**

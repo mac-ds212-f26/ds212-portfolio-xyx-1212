@@ -1,0 +1,67 @@
+---
+title: "Avocado Oil Authenticity"
+author: "Xingyuan Xu"
+format: html
+---
+
+## Question
+
+How often were processed foods made with avocado oil authentic, compared with foods made with olive oil?
+
+## Data
+
+The data come from the [TidyTuesday project](https://github.com/rfordatascience/tidytuesday/tree/main/data/2026/2026-10-06) and were curated from a 2026 UC Davis study.
+Researchers tested two lots of chips, mayonnaise, and salad dressing products to see whether their chemical profiles were consistent with the oil named on the package.
+
+```{r}
+#| message: false
+
+library(tidyverse)
+
+oil_foods <- read_csv(
+  "avocado_oil_processed_foods.csv",
+  show_col_types = FALSE
+)
+```
+
+## Visualization
+
+```{r}
+authenticity <- oil_foods |>
+  group_by(oil_type, category) |>
+  summarize(
+    products_tested = n(),
+    authentic_percent = mean(authentic) * 100,
+    .groups = "drop"
+  ) |>
+  mutate(
+    category = str_to_title(str_replace_all(category, "_", " ")),
+    oil_type = str_to_title(oil_type)
+  )
+
+ggplot(
+  authenticity,
+  aes(x = category, y = authentic_percent, fill = oil_type)
+) +
+  geom_col(position = "dodge") +
+  geom_text(
+    aes(label = str_c(round(authentic_percent), "%")),
+    position = position_dodge(width = 0.9),
+    vjust = -0.3
+  ) +
+  scale_fill_manual(values = c("Avocado" = "#6B8E23", "Olive" = "#D4A017")) +
+  coord_cartesian(ylim = c(0, 110)) +
+  labs(
+    title = "Avocado oil claims rarely passed authenticity testing",
+    subtitle = "Olive oil products passed nearly every test across all three categories",
+    x = NULL,
+    y = "Authentic samples (%)",
+    fill = "Oil on label",
+    caption = "Xingyuan Xu | TidyTuesday 2026-10-06 | Source: UC Davis"
+  ) +
+  theme_classic()
+```
+
+Only 7% of avocado-oil chip samples and 29% of avocado-oil mayonnaise samples were authentic, while none of the avocado-oil salad dressings passed.
+In comparison, 90% to 100% of the olive-oil samples were authentic in each category.
+The dataset contains only 74 lot-level samples, so the results describe the products tested rather than every product on the market.
