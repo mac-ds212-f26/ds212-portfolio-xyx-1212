@@ -47,14 +47,14 @@ ggplot(cities_to_plot,
   geom_col() +
   coord_flip() +
   scale_fill_manual(values = c("Decrease" = "darkorange",
-                               "Increase" = "darkgreen")) +
+                               "Increase" = "darkgreen"),
+                    guide = "none") +
   labs(
-    title = "Bissau had the largest decline in green-area share",
-    subtitle = "Five largest increases and decreases from 1990 to 2025",
+    title = "Largest changes in urban green-area share",
+    subtitle = "Bissau's decline far exceeded any city's increase",
     x = NULL,
     y = "Change in green area (percentage points)",
-    fill = NULL,
-    caption = "Source: UN-Habitat via TidyTuesday") +
+    caption = "Xingyuan Xu | TidyTuesday 2026-09-22 | Source: UN-Habitat") +
   theme_classic()
 ```
 

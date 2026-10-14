@@ -317,6 +317,18 @@ Write a function for converting temperatures that takes as input a numeric value
 
 ```{r}
 # write your answer below
+convert_temp <- function(temp, unit) {
+  if (unit == "C") {
+    return((temp * 9/5) + 32)
+  } else if (unit == "F") {
+    return((temp - 32) * 5/9)
+  } else {
+    return("Unit must be C or F")
+  }
+}
+
+convert_temp(0, "C")
+convert_temp(32, "F")
 ```
 
 
@@ -326,6 +338,16 @@ Write a function that extracts the domain name of a supplied email address. The 
 
 ```{r}
 # write your answer below
+extract_domain <- function(email) {
+  if (str_detect(email, "^[^@]+@[^@]+\\.[^@]+$")) {
+    return(str_extract(email, "(?<=@).+$"))
+  } else {
+    return("Invalid Email")
+  }
+}
+
+extract_domain("student@macalester.edu")
+extract_domain("not-an-email")
 ```
 
 
@@ -412,6 +434,14 @@ Create a new version of `dplyr::count()` that also shows proportions instead of 
 
 ```{r}
 # write your answer below
+count_prop <- function(data, ...) {
+  data |>
+    count(...) |>
+    mutate(proportion = n / sum(n))
+}
+
+count_prop(diamonds, cut)
+count_prop(diamonds, cut, color)
 ```
 
 
@@ -421,6 +451,14 @@ Create a function that creates a scatterplot from a user-supplied dataset with u
 
 ```{r}
 # write your answer below
+plot_smoothers <- function(data, x_var, y_var) {
+  ggplot(data, aes(x = {{ x_var }}, y = {{ y_var }})) +
+    geom_point(alpha = 0.2) +
+    geom_smooth(method = "loess", color = "blue", se = FALSE) +
+    geom_smooth(method = "lm", color = "red", se = FALSE)
+}
+
+plot_smoothers(slice_sample(diamonds, n = 1000), carat, price)
 ```
 
 

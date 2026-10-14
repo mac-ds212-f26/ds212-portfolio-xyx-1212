@@ -1218,5 +1218,38 @@
       "Extras",
       "<span class='chapter-number'>23</span>  <span class='chapter-title'>Extra Sample 2</span>"
     ]
+  },
+  {
+    "objectID": "tt/2026-10-13.html",
+    "href": "tt/2026-10-13.html",
+    "title": "Frogs and Toads",
+    "section": "",
+    "text": "Question\nWhich frog and toad families contain the most species in the AmphibiaWeb data?",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Frogs and Toads</span>"
+    ]
+  },
+  {
+    "objectID": "tt/2026-10-13.html#data",
+    "href": "tt/2026-10-13.html#data",
+    "title": "Frogs and Toads",
+    "section": "Data",
+    "text": "Data\nThe data come from the TidyTuesday project and were collected by AmphibiaWeb. Each row represents one frog or toad species.\n\nCodelibrary(tidyverse)\n\nfrogs &lt;- read_csv(\n  \"frogs_and_toads_amphibiaweb.csv\",\n  show_col_types = FALSE\n)",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Frogs and Toads</span>"
+    ]
+  },
+  {
+    "objectID": "tt/2026-10-13.html#visualization",
+    "href": "tt/2026-10-13.html#visualization",
+    "title": "Frogs and Toads",
+    "section": "Visualization",
+    "text": "Visualization\n\nCodetop_families &lt;- frogs |&gt;\n  filter(!is.na(family)) |&gt;\n  count(family, sort = TRUE) |&gt;\n  slice_head(n = 10)\n\nggplot(top_families, aes(x = reorder(family, n), y = n)) +\n  geom_col(fill = \"#4F8A5B\") +\n  geom_text(aes(label = n), hjust = -0.2) +\n  coord_flip() +\n  ylim(0, 1200) +\n  labs(\n    title = \"Families with the most frog and toad species\",\n    subtitle = \"Hylidae has more than 1,000 species in the AmphibiaWeb data\",\n    x = NULL,\n    y = \"Number of species\",\n    caption = \"TidyTuesday 2026-10-13 | Source: AmphibiaWeb\"\n  ) +\n  theme_classic()\n\n\n\n\n\n\n\nHylidae is the largest family in the dataset with 1,086 species. Strabomantidae and Microhylidae follow with 840 and 768 species. The differences show that frog and toad species are not distributed evenly across families.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Frogs and Toads</span>"
+    ]
   }
 ]

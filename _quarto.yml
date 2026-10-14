@@ -71,6 +71,8 @@ book:
       - tt/2026-09-08.qmd
       - tt/2026-09-15.qmd
       - tt/2026-09-22.qmd
+      - tt/2026-10-06.qmd
+      - tt/2026-10-13.qmd
 
     - part: "Homework 02"
       chapters:
@@ -97,6 +99,8 @@ book:
       - ica/07-wrangling-2.qmd
       - ica/08-missing-data.qmd
       - ica/09-functions.qmd
+      - ica/10-base-r.qmd
+      - ica/11-iteration-1.qmd
 
     - part: "Extras"
       chapters:
