@@ -1,6 +1,5 @@
 ---
 title: "Avocado Oil Authenticity"
-author: "Xingyuan Xu"
 format: html
 ---
 
