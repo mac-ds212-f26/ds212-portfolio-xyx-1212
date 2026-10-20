@@ -57,7 +57,7 @@ ggplot(
     x = NULL,
     y = "Authentic samples (%)",
     fill = "Oil on label",
-    caption = "Xingyuan Xu | TidyTuesday 2026-10-06 | Source: UC Davis"
+    caption = "TidyTuesday 2026-10-06 | Source: UC Davis"
   ) +
   theme_classic()
 ```

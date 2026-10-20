@@ -85,6 +85,9 @@ _freeze/
 !/docs/ica/09-functions_files/**
 !/docs/ica/10-base-r.html
 !/docs/ica/11-iteration-1.html
+!/docs/ica/12-iteration-2.html
+!/docs/ica/12-iteration-2_files/
+!/docs/ica/12-iteration-2_files/**
 !/docs/tt/
 /docs/tt/*
 !/docs/tt/2026-10-06.html

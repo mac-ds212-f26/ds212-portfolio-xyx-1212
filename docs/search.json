@@ -1251,5 +1251,170 @@
       "TidyTuesday",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Frogs and Toads</span>"
     ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html",
+    "href": "ica/12-iteration-2.html",
+    "title": "12 Iteration II",
+    "section": "",
+    "text": "🧩 Learning Goals\nBy the end of this lesson, you should be able to:\nCodelibrary(tidyverse)",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#learning-goals",
+    "href": "ica/12-iteration-2.html#learning-goals",
+    "title": "12 Iteration II",
+    "section": "",
+    "text": "Use the map() family of functions in the purrr package to handle repeated tasks that create output, instead of for loops\nUse the walk() family of functions in the purrr package to handle repeated tasks that need side-effects, instead of for loops",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#iteration-review",
+    "href": "ica/12-iteration-2.html#iteration-review",
+    "title": "12 Iteration II",
+    "section": "Iteration Review",
+    "text": "Iteration Review\nLet’s write a for loop that stores the class() (type) of every column in the mtcars data frame.\nYes, str() does this plus more for you. Let’s consider replicating this task through low-level iteration.\nRecall that:\n\n\nvector(\"numeric/logical/character/list\", length) creates a storage container.\n\nmtcars[[1]] accesses the first element/column of the data frame.",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#get-column-classes",
+    "href": "ica/12-iteration-2.html#get-column-classes",
+    "title": "12 Iteration II",
+    "section": "✏️ Get Column Classes",
+    "text": "✏️ Get Column Classes\nFirst, write out the steps in words. Then translate each step to code.\n\nCode# Make a character vector to store the answers\ncolumn_classes &lt;- vector(\"character\", length = ncol(mtcars))\n\n# Go through the columns one at a time\nfor (i in seq_along(mtcars)) {\n  column_classes[i] &lt;- class(mtcars[[i]])\n}\n\n# Add the column names\nnames(column_classes) &lt;- names(mtcars)\ncolumn_classes\n\n      mpg       cyl      disp        hp      drat        wt      qsec        vs \n\"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \n       am      gear      carb \n\"numeric\" \"numeric\" \"numeric\"",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#iteration-with-purrr",
+    "href": "ica/12-iteration-2.html#iteration-with-purrr",
+    "title": "12 Iteration II",
+    "section": "Iteration with purrr\n",
+    "text": "Iteration with purrr\n\npurrr is a tidyverse package that provides several useful functions for iteration.\nOpen up the purrr cheatsheet.\nThe main advantages of purrr include:\n\nImproved readability of R code\nReduction in the “overhead” in writing a for loop\n\nThese functions create storage containers\nThese functions do the for (i in ...) efficiently\n\n\n\nComputational Time & Memory Allocation\nCompare the four ways to create a vector of integers from 1 to 100,000.\n\nCode# Example 1: For loop with no storage container; append new value to existing vector\nx &lt;- integer()\nresults1 &lt;- bench::mark(\n  for (i in 1:1e5) {\n    x &lt;- c(x, i)\n  }\n)\n\n# Example 2: For loop with a storage container!\nx &lt;- vector('integer', length = 1e5)\nresults2 &lt;- bench::mark(\n  for (i in 1:1e5) {\n    x[i] &lt;- i\n  }\n)\n\n# Example 3: purrr::map()\nresults3 &lt;- bench::mark(purrr::map_int(1:1e5, ~.x))\n\n\n# Example 4: Standard R Function/Operator\nresults4 &lt;- bench::mark(seq(1,1e5))\n\n\n\nCode# Compile Results\nbind_rows(results1, results2, results3, results4) |&gt;\n  mutate(type = c(\"for_loop_no_storage\", \"for_loop_with_storage\", \"purrr_map\", \"standard_func\")) |&gt;\n  select(type, mem_alloc, total_time)  |&gt; print()\n\n# A tibble: 4 × 3\n  type                  mem_alloc total_time\n  &lt;chr&gt;                 &lt;bch:byt&gt;   &lt;bch:tm&gt;\n1 for_loop_no_storage      18.6GB      19.3s\n2 for_loop_with_storage   402.2KB    496.9ms\n3 purrr_map               397.5KB     81.4ms\n4 standard_func                0B     21.2ms",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#iteration-with-map",
+    "href": "ica/12-iteration-2.html#iteration-with-map",
+    "title": "12 Iteration II",
+    "section": "Iteration with map\n",
+    "text": "Iteration with map\n\nIn purrr, we can use the family of map() functions to iteratively apply a function to each element of a list or vector and save its output.\n\nReminder: Data frames/tibbles are named lists so the elements are the “columns” so map() can iterate over columns of a dataset.\n\nLet’s look at the purrr cheatsheet to look at graphical representations of how these functions work.\n\n\nmap() returns a list\n\nmap_chr() returns a character vector\n\nmap_lgl() returns a logical vector\n\nmap_int() returns an integer vector\n\nmap_dbl() returns a numeric vector\n\nmap_vec() returns a vector of a different (non-atomic) type (like dates)\n\nReplicate str()\n\nLet’s return to our original task to replicate str().\nTo get the class() of each data frame column, map_chr() is sensible because classes are strings:\n\nCodemap_chr(mtcars, class)\n\n      mpg       cyl      disp        hp      drat        wt      qsec        vs \n\"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \"numeric\" \n       am      gear      carb \n\"numeric\" \"numeric\" \"numeric\" \n\n\nLet’s get the class of each variable in diamonds:\n\nCodemap_chr(diamonds, class)\n\nError in `map_chr()`:\nℹ In index: 2.\nℹ With name: cut.\nCaused by error:\n! Result must be length 1, not 2.\n\n\nWhat happened!?\nmap_chr() was expecting to create a character vector with one element per element (column) in diamonds. But something happened in column 2 with the cut variable.\nLet’s figure out what happened:\n\nCodeclass(diamonds$cut)\n\n[1] \"ordered\" \"factor\" \n\n\nAh! cut has 2 classes. In this case, map() (which returns a list) is the best option because some variables have multiple classes:\n\nCodemap(diamonds, class)\n\n$carat\n[1] \"numeric\"\n\n$cut\n[1] \"ordered\" \"factor\" \n\n$color\n[1] \"ordered\" \"factor\" \n\n$clarity\n[1] \"ordered\" \"factor\" \n\n$depth\n[1] \"numeric\"\n\n$table\n[1] \"numeric\"\n\n$price\n[1] \"integer\"\n\n$x\n[1] \"numeric\"\n\n$y\n[1] \"numeric\"\n\n$z\n[1] \"numeric\"\n\n\nThe error we encountered with map_chr() is a nice feature of purrr because it allows us to be very sure of the type of output we are getting.\nFailing loudly is vastly preferable to getting unexpected outputs silently\nTidy Selection\nRecall that we explored syntax and functions for selecting variables in a data frame via the tidy-select documentation for across. (?dplyr_tidy_select in the Console.)\nWe can also combine map_*() functions with tidy selection for some powerful variable summaries that require much less code than for loops.\n\nCode# Mean of each numeric variable\nmap_dbl(diamonds |&gt; select(where(is.numeric)), mean)\n\n       carat        depth        table        price            x            y \n   0.7979397   61.7494049   57.4571839 3932.7997219    5.7311572    5.7345260 \n           z \n   3.5387338 \n\nCode# Number of unique values in each non-numeric variable\nmap_int(diamonds |&gt; select(!where(is.numeric)), n_distinct)\n\n    cut   color clarity \n      5       7       8",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#summarize-variables",
+    "href": "ica/12-iteration-2.html#summarize-variables",
+    "title": "12 Iteration II",
+    "section": "✏️ Summarize Variables",
+    "text": "✏️ Summarize Variables\nWe want to compute several summary statistics on each quantitative variable in a data frame and organize the results in a new data frame (rows = variables, columns = summary statistics).\n\nWrite a function called summ_stats() that takes a numeric vector x as input and returns the mean, median, standard deviation, and IQR as a data frame. You can use tibble() to create the data frame.\n\nExample: tibble(a = 1:2, b = 2:3) creates a data frame with variables a and b.\n\n\nUse a map*() function from purrr to get the summary statistics for each quantitative variable in diamonds.\nLook up the bind_rows() documentation from dplyr to combine summary statistics for all quantitative variables into one data frame.\n\nNote: You’ll notice that the variable names are not present in the output. Try to figure out a way to add variable names back in with mutate() and colnames().\n\n\n\nOnce you’ve done that with map(), write a for loop to achieve the same result. Which do you prefer in terms of ease of code writing and readability?\n\nCodesumm_stats &lt;- function(x) {\n  tibble(\n    mean = mean(x, na.rm = TRUE),\n    median = median(x, na.rm = TRUE),\n    sd = sd(x, na.rm = TRUE),\n    IQR = IQR(x, na.rm = TRUE)\n  )\n}\n\nnumeric_diamonds &lt;- diamonds |&gt;\n  select(where(is.numeric))\n\n# Using map()\nmap_summary &lt;- map(numeric_diamonds, summ_stats) |&gt;\n  bind_rows() |&gt;\n  mutate(variable = names(numeric_diamonds), .before = 1)\n\nmap_summary\n\n# A tibble: 7 × 5\n  variable     mean  median       sd     IQR\n  &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;\n1 carat       0.798    0.7     0.474    0.64\n2 depth      61.7     61.8     1.43     1.5 \n3 table      57.5     57       2.23     3   \n4 price    3933.    2401    3989.    4374.  \n5 x           5.73     5.7     1.12     1.83\n6 y           5.73     5.71    1.14     1.82\n7 z           3.54     3.53    0.706    1.13\n\nCode# Using a for loop\nloop_summary &lt;- vector(\"list\", length = ncol(numeric_diamonds))\n\nfor (i in seq_along(numeric_diamonds)) {\n  loop_summary[[i]] &lt;- summ_stats(numeric_diamonds[[i]])\n}\n\nloop_summary &lt;- bind_rows(loop_summary) |&gt;\n  mutate(variable = names(numeric_diamonds), .before = 1)\n\nloop_summary\n\n# A tibble: 7 × 5\n  variable     mean  median       sd     IQR\n  &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;\n1 carat       0.798    0.7     0.474    0.64\n2 depth      61.7     61.8     1.43     1.5 \n3 table      57.5     57       2.23     3   \n4 price    3933.    2401    3989.    4374.  \n5 x           5.73     5.7     1.12     1.83\n6 y           5.73     5.71    1.14     1.82\n7 z           3.54     3.53    0.706    1.13",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#iteration-with-map2-or-pmap",
+    "href": "ica/12-iteration-2.html#iteration-with-map2-or-pmap",
+    "title": "12 Iteration II",
+    "section": "Iteration with map2 or pmap\n",
+    "text": "Iteration with map2 or pmap\n\nIf you need to iterate over the rows of a data frame, we’ll need other versions of map().\npurrr also offers map2() and the pmap() family of functions that take multiple inputs and loops over them simultaneously.\nLet’s look at the purrr cheatsheet to look at graphical representations of how these functions work.\nLet’s look at this code to randomly simulate data from Normal distributions.\n\nCodeargs &lt;- tibble(\n  n = c(100, 100, 100, 100), # this is n\n  mean = c(0, 1, 2, 3),            # this is mean\n  sd = c(4, 3, 2, 1)            # this is sd\n)\n\n# save randomly generated data in tibble with simulation parameters\nsim_data &lt;- args |&gt;\n  mutate(rand_data = pmap(args, rnorm))\n\nsim_data |&gt; head() |&gt; print()\n\n# A tibble: 4 × 4\n      n  mean    sd rand_data  \n  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     \n1   100     0     4 &lt;dbl [100]&gt;\n2   100     1     3 &lt;dbl [100]&gt;\n3   100     2     2 &lt;dbl [100]&gt;\n4   100     3     1 &lt;dbl [100]&gt;\n\n\nNote how the column names in args exactly match the argument names in rnorm().\nThe iteration that is happening is across rows, and the multiple arguments in rnorm() are being matched by name.\nTo access the information in that rand_data list, we need to unnest() this list! It converts/unfolds the information into a numeric vector (repeating the information in mean, sd, n)\n\nCodeunnested_sim &lt;- sim_data |&gt;\n  unnest(rand_data) # convert the rand_data list to numeric vector\n\n\nunnested_sim |&gt;\n  ggplot(aes(x = rand_data, group = mean, fill = factor(mean))) +\n  geom_density(alpha = .5)\n\n\n\n\n\n\n\nWe can also use pmap() to specify variations in some arguments but leave some arguments constant across the iterations:\n\nCodestring_data &lt;- tibble(\n    pattern = c(\"p\", \"n\", \"h\"),\n    replacement = c(\"P\", \"N\", \"H\")\n)\n\npmap_chr(string_data, str_replace_all, string = \"ppp nnn hhh\")\n\n[1] \"PPP nnn hhh\" \"ppp NNN hhh\" \"ppp nnn HHH\"",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#use-pmap-with-str_sub",
+    "href": "ica/12-iteration-2.html#use-pmap-with-str_sub",
+    "title": "12 Iteration II",
+    "section": "✏️ Use pmap() with str_sub()\n",
+    "text": "✏️ Use pmap() with str_sub()\n\nCreate 2 small examples that show how pmap() works with str_sub(). Your examples should:\n\nUse different arguments for string, start, and end\n\nUse different arguments for start and end but a fixed string\n\n\n\nCode# Different string, start, and end values\nwords &lt;- tibble(\n  string = c(\"iteration\", \"Macalester\", \"statistics\"),\n  start = c(1, 4, 6),\n  end = c(4, 8, 10)\n)\n\npmap_chr(words, str_sub)\n\n[1] \"iter\"  \"alest\" \"stics\"\n\nCode# Fixed string with different start and end values\nlocations &lt;- tibble(\n  start = c(1, 4, 7),\n  end = c(3, 6, 9)\n)\n\npmap_chr(locations, str_sub, string = \"Macalester\")\n\n[1] \"Mac\" \"ale\" \"ste\"",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#fit-model-variations",
+    "href": "ica/12-iteration-2.html#fit-model-variations",
+    "title": "12 Iteration II",
+    "section": "✏️ Fit Model Variations",
+    "text": "✏️ Fit Model Variations\nLast class we worked on an extended exercise where our goal was to write a series of functions and a for loop to repeat linear model fitting under different “settings” (removal of outliers, model formula choice).\nRepeat this exercise using pmap().\n\nYou’ll need to use the df_arg_combos object, your remove_outliers() function, and your fit_model() function.\nReview the solutions below for the necessary parts and make sure you understand each part.\nThen, try to put it all together using pmap().\n\n\nCodexs &lt;- diamonds |&gt; select(carat, cut, clarity, color) |&gt; names()\n\n\ndf_arg_combos &lt;- crossing(\n    mod_formula = str_c(\"price ~ \", map_chr(seq_along(xs), ~ str_c(xs[1:.x], collapse = \" + \")) ),\n    remove_outliers = c(TRUE, FALSE)\n)\ndf_arg_combos\n\n# A tibble: 8 × 2\n  mod_formula                           remove_outliers\n  &lt;chr&gt;                                 &lt;lgl&gt;          \n1 price ~ carat                         FALSE          \n2 price ~ carat                         TRUE           \n3 price ~ carat + cut                   FALSE          \n4 price ~ carat + cut                   TRUE           \n5 price ~ carat + cut + clarity         FALSE          \n6 price ~ carat + cut + clarity         TRUE           \n7 price ~ carat + cut + clarity + color FALSE          \n8 price ~ carat + cut + clarity + color TRUE           \n\nCoderemove_outliers &lt;- function(data, what_var, sd_thresh) {\n    data |&gt;\n        mutate(zscore = ({{ what_var }} - mean({{ what_var }}, na.rm = TRUE))/sd({{ what_var }}, na.rm = TRUE)) |&gt;\n        filter(zscore &lt;= sd_thresh)\n}\n\nfit_model &lt;- function(data, mod_formula, remove_outliers) {\n    if (remove_outliers) {\n        data_clean &lt;- remove_outliers(data, what_var = carat, sd_thresh = 3)\n    } else {\n        data_clean &lt;- data\n    }\n\n    lm(mod_formula, data = data_clean)\n}\n\n# use pmap()\nmodels &lt;- pmap(\n    df_arg_combos,\n    fit_model,\n    data = diamonds\n)\n\nmodels\n\n[[1]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat  \n      -2256         7756  \n\n\n[[2]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat  \n      -2354         7898  \n\n\n[[3]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat        cut.L        cut.Q        cut.C        cut^4  \n   -2701.38      7871.08      1239.80      -528.60       367.91        74.59  \n\n\n[[4]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat        cut.L        cut.Q        cut.C        cut^4  \n   -2782.90      8012.63      1179.04      -465.31       337.40        90.91  \n\n\n[[5]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat        cut.L        cut.Q        cut.C        cut^4  \n  -3187.540     8472.026      713.804     -334.503      188.482        1.663  \n  clarity.L    clarity.Q    clarity.C    clarity^4    clarity^5    clarity^6  \n   4011.681    -1821.922      917.658     -430.047      257.141       26.909  \n  clarity^7  \n    186.742  \n\n\n[[6]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat        cut.L        cut.Q        cut.C        cut^4  \n  -3211.955     8604.166      693.601     -310.001      176.420        9.009  \n  clarity.L    clarity.Q    clarity.C    clarity^4    clarity^5    clarity^6  \n   3790.470    -1546.330      694.758     -294.293      178.926       56.096  \n  clarity^7  \n    181.933  \n\n\n[[7]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat        cut.L        cut.Q        cut.C        cut^4  \n  -3710.603     8886.129      698.907     -327.686      180.565       -1.207  \n  clarity.L    clarity.Q    clarity.C    clarity^4    clarity^5    clarity^6  \n   4217.535    -1832.406      923.273     -361.995      216.616        2.105  \n  clarity^7      color.L      color.Q      color.C      color^4      color^5  \n    110.340    -1910.288     -627.954     -171.960       21.678      -85.943  \n    color^6  \n    -49.986  \n\n\n[[8]]\n\nCall:\nlm(formula = mod_formula, data = data_clean)\n\nCoefficients:\n(Intercept)        carat        cut.L        cut.Q        cut.C        cut^4  \n  -3724.322     9007.286      675.568     -301.591      167.295        6.644  \n  clarity.L    clarity.Q    clarity.C    clarity^4    clarity^5    clarity^6  \n   3982.636    -1541.736      689.208     -219.693      135.996       32.560  \n  clarity^7      color.L      color.Q      color.C      color^4      color^5  \n    104.156    -1925.179     -613.256     -163.611       29.485      -72.600  \n    color^6  \n    -49.973",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#iteration-with-walk",
+    "href": "ica/12-iteration-2.html#iteration-with-walk",
+    "title": "12 Iteration II",
+    "section": "Iteration with walk\n",
+    "text": "Iteration with walk\n\nIf we don’t care about saving an output for each iteration, we can use the family of walk() functions (walk, walk2, and pwalk) to apply a function to each element of a list or vector with no output.\nLet’s say, we wanted to visualize the relationship between carat and price by clarity.\nIf we wanted a fully stratified (fully separated) analysis, we could create one visualization per clarity category and save it separately.\nFirst, let’s create separate datasets that are still contained in one tibble.\n\nCode# Let's create separate datasets within one tibble\nby_clarity &lt;- diamonds |&gt;\n  group_nest(clarity)\n\nby_clarity |&gt; head() |&gt; print()\n\n# A tibble: 6 × 2\n  clarity               data\n  &lt;ord&gt;   &lt;list&lt;tibble[,9]&gt;&gt;\n1 I1               [741 × 9]\n2 SI2            [9,194 × 9]\n3 SI1           [13,065 × 9]\n4 VS2           [12,258 × 9]\n5 VS1            [8,171 × 9]\n6 VVS2           [5,066 × 9]\n\n\n\nCode# Create a variable with a image path\nby_clarity &lt;- by_clarity |&gt;\n  mutate(path = str_glue(\"diamonds-{clarity}.png\"))\n\nby_clarity |&gt; head() |&gt; print()\n\n# A tibble: 6 × 3\n  clarity               data path             \n  &lt;ord&gt;   &lt;list&lt;tibble[,9]&gt;&gt; &lt;glue&gt;           \n1 I1               [741 × 9] diamonds-I1.png  \n2 SI2            [9,194 × 9] diamonds-SI2.png \n3 SI1           [13,065 × 9] diamonds-SI1.png \n4 VS2           [12,258 × 9] diamonds-VS2.png \n5 VS1            [8,171 × 9] diamonds-VS1.png \n6 VVS2           [5,066 × 9] diamonds-VVS2.png\n\n\n\nCode# plot for making a scatterplot\ncarat_scatter &lt;- function(df) {\n  ggplot(df, aes(x = carat, y = price)) + geom_point()\n}\n\n# Create a \"variable\" with each plots\nby_clarity &lt;- by_clarity |&gt;\n  mutate(plot = map(data, carat_scatter)) # iterate over data to create ggplot output\n\n\n\nCode# Iterate over paths and plots to save the export images\nwalk2(\n  by_clarity$path,\n  by_clarity$plot,\n  function(path, plot){ ggsave(path, plot, width = 6, height = 6)}\n)",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "ica/12-iteration-2.html#done",
+    "href": "ica/12-iteration-2.html#done",
+    "title": "12 Iteration II",
+    "section": "Done!",
+    "text": "Done!\n\nCheck the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>26</span>  <span class='chapter-title'>12 Iteration II</span>"
+    ]
+  },
+  {
+    "objectID": "tt/2026-10-06.html",
+    "href": "tt/2026-10-06.html",
+    "title": "Avocado Oil Authenticity",
+    "section": "",
+    "text": "Question\nHow often were processed foods made with avocado oil authentic, compared with foods made with olive oil?",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Avocado Oil Authenticity</span>"
+    ]
+  },
+  {
+    "objectID": "tt/2026-10-06.html#data",
+    "href": "tt/2026-10-06.html#data",
+    "title": "Avocado Oil Authenticity",
+    "section": "Data",
+    "text": "Data\nThe data come from the TidyTuesday project and were curated from a 2026 UC Davis study. Researchers tested two lots of chips, mayonnaise, and salad dressing products to see whether their chemical profiles were consistent with the oil named on the package.\n\nCodelibrary(tidyverse)\n\noil_foods &lt;- read_csv(\n  \"avocado_oil_processed_foods.csv\",\n  show_col_types = FALSE\n)",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Avocado Oil Authenticity</span>"
+    ]
+  },
+  {
+    "objectID": "tt/2026-10-06.html#visualization",
+    "href": "tt/2026-10-06.html#visualization",
+    "title": "Avocado Oil Authenticity",
+    "section": "Visualization",
+    "text": "Visualization\n\nCodeauthenticity &lt;- oil_foods |&gt;\n  group_by(oil_type, category) |&gt;\n  summarize(\n    products_tested = n(),\n    authentic_percent = mean(authentic) * 100,\n    .groups = \"drop\"\n  ) |&gt;\n  mutate(\n    category = str_to_title(str_replace_all(category, \"_\", \" \")),\n    oil_type = str_to_title(oil_type)\n  )\n\nggplot(\n  authenticity,\n  aes(x = category, y = authentic_percent, fill = oil_type)\n) +\n  geom_col(position = \"dodge\") +\n  geom_text(\n    aes(label = str_c(round(authentic_percent), \"%\")),\n    position = position_dodge(width = 0.9),\n    vjust = -0.3\n  ) +\n  scale_fill_manual(values = c(\"Avocado\" = \"#6B8E23\", \"Olive\" = \"#D4A017\")) +\n  coord_cartesian(ylim = c(0, 110)) +\n  labs(\n    title = \"Avocado oil claims rarely passed authenticity testing\",\n    subtitle = \"Olive oil products passed nearly every test across all three categories\",\n    x = NULL,\n    y = \"Authentic samples (%)\",\n    fill = \"Oil on label\",\n    caption = \"TidyTuesday 2026-10-06 | Source: UC Davis\"\n  ) +\n  theme_classic()\n\n\n\n\n\n\n\nOnly 7% of avocado-oil chip samples and 29% of avocado-oil mayonnaise samples were authentic, while none of the avocado-oil salad dressings passed. In comparison, 90% to 100% of the olive-oil samples were authentic in each category. The dataset contains only 74 lot-level samples, so the results describe the products tested rather than every product on the market.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Avocado Oil Authenticity</span>"
+    ]
   }
 ]
