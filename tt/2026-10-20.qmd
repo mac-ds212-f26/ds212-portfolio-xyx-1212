@@ -1,0 +1,56 @@
+---
+title: "College Majors, AI Exposure, and Pay"
+format: html
+---
+
+## Question
+
+Among the majors with the lowest AI exposure, which ones have the highest starting salaries?
+
+## Data
+
+The data come from the [TidyTuesday project](https://github.com/rfordatascience/tidytuesday/tree/main/data/2026/2026-10-20).
+They combine starting salaries from the College Scorecard with estimates of occupational exposure to AI.
+A lower AI exposure percentile means that the major is less exposed relative to other majors in this dataset.
+
+```{r}
+#| message: false
+
+library(tidyverse)
+
+majors <- read_csv(
+  "ai_salary_majors.csv",
+  show_col_types = FALSE
+)
+```
+
+## Visualization
+
+```{r}
+safe_majors <- majors %>%
+  filter(ai_exposure_percentile <= 20) %>%
+  slice_max(median_starting_salary, n = 10) %>%
+  mutate(major = str_wrap(field_of_study, width = 30))
+
+ggplot(
+  safe_majors,
+  aes(
+    x = median_starting_salary,
+    y = reorder(major, median_starting_salary)
+  )
+) +
+  geom_col(fill = "steelblue") +
+  scale_x_continuous(labels = scales::label_dollar()) +
+  labs(
+    title = "Low AI exposure can still come with high pay",
+    subtitle = "Ten highest-paid majors among the lowest 20% in AI exposure",
+    x = "Median starting salary",
+    y = NULL,
+    caption = "TidyTuesday 2026-10-20 | Sources: College Scorecard and AIOE"
+  ) +
+  theme_classic()
+```
+
+The majors shown here are all in the lowest 20% of AI exposure in the dataset, but their starting salaries still vary.
+Several hands-on engineering and technical programs appear near the top.
+AI exposure measures how much a job's tasks overlap with AI abilities, so low exposure does not guarantee that a job is completely safe from automation.
