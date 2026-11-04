@@ -1,0 +1,41 @@
+---
+title: "IKEA Names and Swedish Places"
+format: html
+---
+
+## Question
+
+What kinds of Swedish places share names with IKEA sofas and armchairs?
+
+## Data
+
+The data come from the [TidyTuesday IKEA sofas and Swedish places project](https://github.com/rfordatascience/tidytuesday/tree/main/data/2026/2026-10-27). The table contains Swedish locations from OpenStreetMap that match IKEA product names.
+
+```{r}
+#| message: false
+
+library(tidyverse)
+
+ikea_places <- read_csv("ikea_places.csv", show_col_types = FALSE)
+```
+
+## Visualization
+
+```{r}
+place_counts <- ikea_places %>%
+  count(place_type, sort = TRUE) %>%
+  slice_head(n = 8)
+
+ggplot(place_counts, aes(x = n, y = reorder(place_type, n))) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Most IKEA place-name matches are small settlements",
+    subtitle = "The eight most common place types in the Swedish location data",
+    x = "Number of matching places",
+    y = NULL,
+    caption = "TidyTuesday 2026-10-27 | Source: OpenStreetMap"
+  ) +
+  theme_classic()
+```
+
+Many IKEA product names match small places such as hamlets and villages. This fits IKEA's naming system: sofas and armchairs are named after places in Sweden, not only large cities.
